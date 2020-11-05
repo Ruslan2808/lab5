@@ -12,7 +12,7 @@ protected:
 public:
 	virtual void show() = 0;
 	Animal(char*, char*);
-	virtual ~Animal();
+	virtual ~Animal() = 0;
 };
 
 class Mammal :public Animal {
