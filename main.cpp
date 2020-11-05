@@ -6,13 +6,16 @@
 using namespace std;
 
 class Animal {
+protected:
+	char* name;
+	char* ms;
 public:
 	virtual void show() = 0;
+	Animal(char*, char*);
+	virtual ~Animal();
 };
 
 class Mammal :public Animal {
-	char* name;
-	char* ms;
 	char* pt;
 	int age;
 public:
@@ -22,10 +25,8 @@ public:
 };
 
 class Fish :public Animal {
-	char* name;
-	char* ms;
 	int kolplavn;
-	int ves; 
+	int ves;
 public:
 	Fish(char*, char*, int, int);
 	~Fish();
@@ -33,8 +34,6 @@ public:
 };
 
 class Bird :public Animal {
-	char* name;
-	char* ms;
 	int razmah;
 	char* color;
 public:
@@ -44,6 +43,7 @@ public:
 };
 
 int menu();
+int menuMain();
 int getInt();
 string writeWords();
 
@@ -52,70 +52,108 @@ int main() {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	char nam[80], mesto[80], tp[80], clr[80];
-	int pr, kol, vib;
+	int pr, kol, vib, vibm, n = 0;
 	double vs, rz;
-	Animal* p[3];
+	Animal** p = new Animal*[n];
 	while (true) {
-		vib = menu();
-		if (vib == 0) {
-			cout << "Название: ";
-			string nam1 = writeWords();
-			strcpy_s(nam, nam1.c_str());
-			cout << "Место обитания: ";
-			string mesto1 = writeWords();
-			strcpy_s(mesto, mesto1.c_str());
-			cout << "Введите тип питания: ";
-			string tp1 = writeWords();
-			strcpy_s(tp, tp1.c_str());
-			cout << "Продолжительность жизни(лет): ";
-			pr = getInt();
-			Mammal ml(nam, mesto, tp, pr);
-			p[0] = &ml;
-			p[0]->show();
+		vibm = menuMain();
+		if (vibm == 0) {
+			while (true) {
+				vib = menu();
+				if (vib == 0) {
+					cout << "Название: ";
+					string nam1 = writeWords();
+					strcpy_s(nam, nam1.c_str());
+					cout << "Место обитания: ";
+					string mesto1 = writeWords();
+					strcpy_s(mesto, mesto1.c_str());
+					cout << "Введите тип питания: ";
+					string tp1 = writeWords();
+					strcpy_s(tp, tp1.c_str());
+					cout << "Продолжительность жизни(лет): ";
+					pr = getInt();
+					Animal** p1 = new Animal * [n + 1];
+					copy(p, p + n, p1);
+					p1[n] = new Mammal(nam, mesto, tp, pr);
+					n++;
+					delete[]p;
+					p = p1;
+				}
+				else if (vib == 1) {
+					cout << "Название: ";
+					string nam1 = writeWords();
+					strcpy_s(nam, nam1.c_str());
+					cout << "Место обитания: ";
+					string mesto1 = writeWords();
+					strcpy_s(mesto, mesto1.c_str());
+					cout << "Количество плавников: ";
+					kol = getInt();
+					cout << "Вес(гр): ";
+					vs = getInt();
+					Animal** p1 = new Animal * [n + 1];
+					copy(p, p + n, p1);
+					p1[n] = new Fish(nam, mesto, kol, vs);
+					n++;
+					delete[]p;
+					p = p1;
+				}
+				else if (vib == 2) {
+					cin.clear();
+					cout << "Название: ";
+					string nam1 = writeWords();
+					strcpy_s(nam, nam1.c_str());
+					cout << "Место обитания: ";
+					string mesto1 = writeWords();
+					strcpy_s(mesto, mesto1.c_str());
+					cout << "Размах крыльев(см): ";
+					rz = getInt();
+					cout << "Цвет: ";
+					string clr1 = writeWords();
+					strcpy_s(clr, clr1.c_str());
+					Animal** p1 = new Animal * [n + 1];
+					copy(p, p + n, p1);
+					p1[n] = new Bird(nam, mesto, rz, clr);
+					n++;
+					delete[]p;
+					p = p1;
+				}
+				else break;
+				system("pause");
+			}
 		}
-		else if (vib == 1) {
-			cout << "Название: ";
-			string nam1 = writeWords();
-			strcpy_s(nam, nam1.c_str());
-			cout << "Место обитания: ";
-			string mesto1 = writeWords();
-			strcpy_s(mesto, mesto1.c_str());
-			cout << "Количество плавников: ";
-			kol = getInt();
-			cout << "Вес(гр): ";
-			vs = getInt();
-			Fish rb(nam, mesto, kol, vs);
-			p[1] = &rb;
-			p[1]->show();
-		}
-		else if (vib == 2) {
-			cin.clear();
-			cout << "Название: ";
-			string nam1 = writeWords();
-			strcpy_s(nam, nam1.c_str());
-			cout << "Место обитания: ";
-			string mesto1 = writeWords();
-			strcpy_s(mesto, mesto1.c_str());
-			cout << "Размах крыльев(см): ";
-			rz = getInt();
-			cout << "Цвет: ";
-			string clr1 = writeWords();
-			strcpy_s(clr, clr1.c_str());
-			Bird bd(nam, mesto, rz, clr);
-			p[2] = &bd;
-			p[2]->show();
+		else if (vibm == 1) {
+			if (n == 0) {
+				cout << "Нет введенной информации!!!" << endl;
+			}
+			else {
+				for (int i = 0; i < n; i++) {
+					p[i]->show();
+				}
+			}
+			system("pause");
 		}
 		else break;
-		system("pause");
 	}
+	for (int i = 0; i < n; i++) {
+		delete p[i];
+	}
+	delete[]p;
 	return 0;
 }
 
-Mammal::Mammal(char* n, char* m, char* p, int a) {
+Animal::Animal(char* n, char* m) {
 	name = new char[strlen(n) + 1];
 	strcpy_s(name, strlen(n) + 1, n);
 	ms = new char[strlen(m) + 1];
 	strcpy_s(ms, strlen(m) + 1, m);
+}
+
+Animal::~Animal() {
+	delete[] name;
+	delete[] ms;
+}
+
+Mammal::Mammal(char* n, char* m, char* p, int a) :Animal(n, m) {
 	pt = new char[strlen(p) + 1];
 	strcpy_s(pt, strlen(p) + 1, p);
 	age = a;
@@ -123,31 +161,23 @@ Mammal::Mammal(char* n, char* m, char* p, int a) {
 
 void Mammal::show() {
 	cout << endl;
-	system("cls");
 	cout << "Млекопитающее\n" << "Название: " << name << endl
 		<< "Место обитания: " << ms << endl
 		<< "Тип питания: " << pt << endl
-		<< "Продолжительность жизни: " << age << " лет" <<  endl;
+		<< "Продолжительность жизни: " << age << " лет" << endl;
 }
 
 Mammal::~Mammal() {
-	delete[] name;
-	delete[] ms;
 	delete[] pt;
 }
 
-Fish::Fish(char* n, char* m, int k, int v) {
-	name = new char[strlen(n) + 1];
-	strcpy_s(name, strlen(n) + 1, n);
-	ms = new char[strlen(m) + 1];
-	strcpy_s(ms, strlen(m) + 1, m);
+Fish::Fish(char* n, char* m, int k, int v) :Animal(n, m) {
 	kolplavn = k;
 	ves = v;
 }
 
 void Fish::show() {
 	cout << endl;
-	system("cls");
 	cout << "Рыба\n" << "Название: " << name << endl
 		<< "Место обитания: " << ms << endl
 		<< "Количество плавников: " << kolplavn << endl
@@ -155,15 +185,10 @@ void Fish::show() {
 }
 
 Fish::~Fish() {
-	delete[] name;
-	delete[] ms;
+
 }
 
-Bird::Bird(char* n, char* m, int r, char* c) {
-	name = new char[strlen(n) + 1];
-	strcpy_s(name, strlen(n) + 1, n);
-	ms = new char[strlen(m) + 1];
-	strcpy_s(ms, strlen(m) + 1, m);
+Bird::Bird(char* n, char* m, int r, char* c) :Animal(n, m) {
 	razmah = r;
 	color = new char[strlen(c) + 1];
 	strcpy_s(color, strlen(c) + 1, c);
@@ -171,7 +196,6 @@ Bird::Bird(char* n, char* m, int r, char* c) {
 
 void Bird::show() {
 	cout << endl;
-	system("cls");
 	cout << "Птица\n" << "Название: " << name << endl
 		<< "Место обитания: " << ms << endl
 		<< "Размах крыльев: " << razmah << " см" << endl
@@ -179,8 +203,6 @@ void Bird::show() {
 }
 
 Bird::~Bird() {
-	delete[] name;
-	delete[] ms;
 	delete[] color;
 }
 
@@ -220,6 +242,39 @@ int menu()
 	}
 }
 
+int menuMain()
+{
+	int choiceButton = 0, button = 0;
+	system("cls");
+	while (true)
+	{
+		choiceButton = (choiceButton + 3) % 3;
+
+		if (choiceButton == 0) cout << "->Ввод информации" << endl;
+		else cout << "Ввод информации" << endl;
+
+		if (choiceButton == 1) cout << "->Просмотр информации" << endl;
+		else cout << "Просмотр" << endl;
+
+		if (choiceButton == 2) cout << "->Выход" << endl;
+		else cout << "Выход" << endl;
+
+		button = _getch();
+		if (button == 224)
+		{
+			button = _getch();
+			if (button == 72) choiceButton--;
+			if (button == 80) choiceButton++;
+		}
+		if (button == 13) {
+			system("cls");
+			return choiceButton;
+		}
+
+		system("cls");
+	}
+}
+
 int getInt() {
 	string numbers;
 	while (true) {
@@ -236,7 +291,7 @@ int getInt() {
 				}
 			}
 			else
-				if (key == 13) break;
+				if (key == 13 && numbers.length() != 0) break;
 				else
 					if (key >= '0' && key <= '9') {
 						numbers = numbers + (char)key;
